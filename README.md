@@ -22,5 +22,5 @@ yarn dev
 
 ##To run the app in production mode
 ```bash
-yarn start
+yarn preview
 ```
