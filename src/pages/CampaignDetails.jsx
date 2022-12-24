@@ -139,7 +139,7 @@ const CampaignDetails = () => {
                 <img src={thirdweb} alt="user" className="w-[60%] h-[60%] object-contain"/>
               </div>
               <div>
-                <h4 className="font-epilogue font-semibold text-[14px] text-white break-all">{state.owner}</h4>
+                <h4 className="font-epilogue font-semibold text-[14px] text-white break-all">{state.name} ({state.owner})</h4>
                 {/* <p className="mt-[4px] font-epilogue font-normal text-[12px] text-[#808191]">10 Campaigns</p> */}
               </div>
             </div>

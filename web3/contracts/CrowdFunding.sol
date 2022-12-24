@@ -148,6 +148,10 @@ contract CrowdFunding {
         return refundDonationMessage;
     }
 
+    function fuelUp() public payable {
+        //function stores funds on contract by default
+    }
+
 
     function donate(uint256 _id) public payable {
         uint256 amount = msg.value;
