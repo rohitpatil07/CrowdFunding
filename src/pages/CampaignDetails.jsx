@@ -5,28 +5,45 @@ import { ethers } from 'ethers';
 import { useStateContext } from '../context';
 import { CountBox, CustomButton, Loader } from '../components';
 import { calculateBarPercentage, daysLeft } from '../utils';
-import { thirdweb } from '../assets';
+import { thirdweb, withdraw } from '../assets';
 
 const CampaignDetails = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
-  const { donate, getDonations, contract, address } = useStateContext();
+  const { donate, getDonations, contract, address  , close , withdraw , refund} = useStateContext();
 
   const [isLoading, setIsLoading] = useState(false);
   const [amount, setAmount] = useState('');
   const [donators, setDonators] = useState([]);
+  const [latestDonationIndex , setLatestDonationIndex] = useState(-1);
+  const [latestDonationAmount, setLatestDonationAmount] = useState(0);
+  const [isDonator, setIsDonator] = useState(false);
 
   const remainingDays = daysLeft(state.deadline);
 
   const fetchDonators = async () => {
     const data = await getDonations(state.pId);
 
-    setDonators(data);
+    const result = data.filter((item) => {
+      return item.donation > 0;
+    }) 
+
+    setDonators(result);
   }
 
   useEffect(() => {
     if(contract) fetchDonators();
   }, [contract, address])
+
+  useEffect(() => {
+      const {index , amount , isDonator} = checkDonator(); 
+      if(isDonator){
+          setLatestDonationIndex(index);
+          setLatestDonationAmount(amount);
+          setIsDonator(true);
+      }
+  }, [donators])
+  
 
   const handleDonate = async () => {
     setIsLoading(true);
@@ -35,6 +52,61 @@ const CampaignDetails = () => {
 
     navigate('/')
     setIsLoading(false);
+  }
+
+  const handleWithdrawFunds = async () => {
+    setIsLoading(true);
+
+    if(state.amountCollected <= 0) return;
+
+    await withdraw(state.pId);
+
+    navigate('/profile')
+
+
+    setIsLoading(false);
+  }
+
+  const handleCloseCampaign = async () => {
+    setIsLoading(true);
+
+    if(state.amountCollected > 0){
+      await withdraw(state.pId);
+    }
+    await close(state.pId);
+
+    navigate('/profile');
+
+    setIsLoading(false);
+  }
+
+  const handleRefund = async () => {
+    setIsLoading(true);
+
+    await refund(state.pId , latestDonationAmount);
+    navigate("/");
+    setIsLoading(false);
+  }
+
+
+  const checkDonator =  () => {
+    let isDonator  = false;
+    let index = -1;
+    let amount = 0
+
+    if(donators.length < 1) return false;
+
+    for(let i = donators.length -1; i >= 0;i--){
+      if(donators[i].donator == address){
+        index  = i;
+        amount = donators[i].donation;
+        isDonator = true;
+        break;
+      }
+    }
+
+    
+    return {index , amount , isDonator};
   }
 
   return (
@@ -122,9 +194,38 @@ const CampaignDetails = () => {
               <CustomButton 
                 btnType="button"
                 title="Fund Campaign"
-                styles="w-full bg-[#8c6dfd]"
+                styles="w-full bg-[#8c6dfd] hover:bg-[#4acd8d]"
                 handleClick={handleDonate}
               />
+
+              { state.owner == address && 
+              <CustomButton 
+                btnType="button"
+                title="Close Campaign"
+                styles="w-full bg-[#8c6dfd] mt-[10px] hover:bg-[#4acd8d]"
+                handleClick={handleCloseCampaign}
+              />
+              }
+
+              { state.owner == address && state.amountCollected > 0 &&
+                <CustomButton 
+                btnType="button"
+                title="WithDraw Funds"
+                styles="w-full bg-[#8c6dfd] mt-[10px] hover:bg-[#4acd8d]"
+                handleClick={handleWithdrawFunds}
+              />
+              }
+
+              { isDonator &&
+                <CustomButton 
+                btnType="button"
+                title="Refund Donation"
+                styles="w-full bg-[#8c6dfd] mt-[10px] hover:bg-[#4acd8d]"
+                handleClick={handleRefund}
+              />
+              }
+
+
             </div>
           </div>
         </div>
