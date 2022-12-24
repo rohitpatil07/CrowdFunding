@@ -1,6 +1,26 @@
-# crowdfunding
+## CauseConnect Fundraising BlockChain Web Application
+This is an crowd funding blockchain application.It is deployed on https://causeconnect.vercel.app/
 
-This is an crowd funding blockchain application
-It is deployed on https://causeconnect.vercel.app/
-You will need a metamask account 
-For now it is configured to an Goerli Test network
+##Requirements
+1.You will need a metamask account 
+2.Set the network to Goerli Testnet(5)
+
+
+##Getting Started
+
+To install dependencies 
+```bash
+run npm i
+or
+yarn
+```
+
+##To run the app in developoment mode
+```bash
+yarn dev
+```
+
+##To run the app in production mode
+```bash
+yarn start
+```
