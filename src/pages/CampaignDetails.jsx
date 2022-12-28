@@ -123,7 +123,7 @@ const CampaignDetails = () => {
         </div>
 
         <div className="flex md:w-[150px] w-full flex-wrap justify-between gap-[30px]">
-          <CountBox title="Days Left" value={remainingDays} />
+          <CountBox title="Days Left" value={remainingDays > 0 ? remainingDays : 0 } />
           <CountBox title={`Raised of ${state.target}`} value={state.amountCollected} />
           <CountBox title="Total Backers" value={donators.length} />
         </div>
@@ -194,8 +194,8 @@ const CampaignDetails = () => {
               <CustomButton 
                 btnType="button"
                 title="Fund Campaign"
-                styles="w-full bg-[#8c6dfd] hover:bg-[#4acd8d]"
-                handleClick={handleDonate}
+                styles={`w-full bg-[#8c6dfd] hover:bg-[#4acd8d]  ${remainingDays < 0 ? "disabled cursor-not-allowed" : "cursor-pointer" }`}
+                handleClick={ remainingDays > 0 ?  handleDonate : ()=>{}}
               />
 
               { state.owner == address && 
@@ -220,8 +220,8 @@ const CampaignDetails = () => {
                 <CustomButton 
                 btnType="button"
                 title="Refund Donation"
-                styles="w-full bg-[#8c6dfd] mt-[10px] hover:bg-[#4acd8d]"
-                handleClick={handleRefund}
+                styles={`w-full bg-[#8c6dfd] mt-[10px] hover:bg-[#4acd8d] ${remainingDays < 0 ? "disabled cursor-not-allowed" : "cursor-pointer" }`}
+                handleClick={remainingDays >= 3 ? handleRefund : ()=>{}}
               />
               }
 

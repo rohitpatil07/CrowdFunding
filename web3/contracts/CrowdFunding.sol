@@ -17,7 +17,7 @@ contract CrowdFunding {
     string image;
     address[] donators;
     uint256[] donations;
-    uint256 id;  // Add this field to store the ID of the campaign
+    uint256 id; 
     }
 
     struct ClosedCampaign {
@@ -31,7 +31,7 @@ contract CrowdFunding {
     string image;
     address[] donators;
     uint256[] donations;
-    uint256 id;  // Add this field to store the ID of the campaign
+    uint256 id;  
     }
 
     struct RefundMessage {
@@ -39,7 +39,6 @@ contract CrowdFunding {
         uint256 refundAmount;
     }
 
-    // Replace the campaigns mapping with a sparse mapping
     mapping(uint256 => Campaign) public campaigns;
     mapping(uint256 => ClosedCampaign) public closedCampaigns;
 
@@ -179,23 +178,6 @@ contract CrowdFunding {
 
     }
 
-
-    function donateToCampaign(uint256 _id) public payable {
-        uint256 amount = msg.value;
-
-        Campaign storage campaign = campaigns[_id];
-
-        campaign.donators.push(msg.sender);
-        campaign.donations.push(amount);
-
-        (bool sent,) = payable(campaign.owner).call{value : amount}("");
-
-        if(sent) {
-            campaign.amountCollected = campaign.amountCollected + amount;
-        } 
-
-    }
-
     function getDonators(uint256 _id) public view returns (address[] memory ,uint256[] memory) {
         return (campaigns[_id].donators,campaigns[_id].donations);
     }
@@ -210,6 +192,18 @@ contract CrowdFunding {
 
         return allCampaigns;
 
+    }
+
+
+    function getClosedCampaigns() public view returns (ClosedCampaign[] memory){
+        ClosedCampaign[] memory allClosedCampaigns = new ClosedCampaign[](numberOfClosedCampaigns);
+
+        for (uint i = 0; i < numberOfClosedCampaigns;i++){
+            ClosedCampaign storage item = closedCampaigns[i];
+            allClosedCampaigns[i] = item;
+        }
+
+        return allClosedCampaigns; 
     }
 
 }
